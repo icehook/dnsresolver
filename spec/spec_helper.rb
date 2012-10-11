@@ -1,6 +1,5 @@
 $:.push File.expand_path('lib', File.dirname(__FILE__))
 require 'bundler/setup'
-require 'rspec'
 require 'dnsresolver'
 
 include DNSResolver
