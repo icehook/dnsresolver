@@ -1,0 +1,9 @@
+dnsruby:
+  query_timeout: 0.5
+  do_caching: false
+  dnssec: false
+  recurse: true
+nameservers:
+  - 8.8.8.8
+  - 4.2.2.2
+registry_name: dnsresolver
