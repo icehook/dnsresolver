@@ -1,5 +1,6 @@
 module DNSResolver
   module Logger
+    extend self
 
     def logger
       unless @logger
