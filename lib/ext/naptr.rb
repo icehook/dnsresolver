@@ -1,5 +1,3 @@
-require 'resolv'
-
 class Resolv
   class DNS
     class Resource
@@ -9,6 +7,13 @@ class Resolv
           ClassValue = IN::ClassValue
           ClassHash[[TypeValue, ClassValue]] = self
 
+          attr_reader :order
+          attr_reader :preference
+          attr_reader :flag
+          attr_reader :service_name
+          attr_reader :regex
+          attr_reader :replacement
+
           def initialize(order, preference, flag, service_name, regex, replacement)
             @order = order
             @preference = preference
@@ -17,13 +22,6 @@ class Resolv
             @regex = regex
             @replacement = replacement
           end
-
-          attr_reader :order
-          attr_reader :preference
-          attr_reader :flag
-          attr_reader :service_name
-          attr_reader :regex
-          attr_reader :replacement
 
           def encode_data(msg)
             msg.put_pack('n', @order)

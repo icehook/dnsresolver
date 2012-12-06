@@ -15,12 +15,16 @@ module DNSResolver
       urls = []
 
       Fiber.new {
-        @resolver.each_resource(name, Resolv::DNS::Resource::IN::NAPTR) do |res|
-          regex = res.regex
-          c = regex[0,1]
-          substr = regex[1,regex.length - 2]
-          match, replace = substr.split(c)
-          urls << name.gsub(/#{match}/, replace)
+        begin
+          @resolver.each_resource(name, Resolv::DNS::Resource::IN::NAPTR) do |res|
+            regex = res.regex
+            c = regex[0,1]
+            substr = regex[1,regex.length - 2]
+            match, replace = substr.split(c)
+            urls << name.gsub(/#{match}/, replace)
+          end
+        rescue Exception => e
+          raise DNSResolverError, "Error resolving #{name}"
         end
       }.resume
 
