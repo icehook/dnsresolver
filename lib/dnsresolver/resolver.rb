@@ -12,7 +12,7 @@ module DNSResolver
     end
 
     def resolve_naptr(name)
-      urls = []
+      uris = []
 
       Fiber.new {
         begin
@@ -21,14 +21,14 @@ module DNSResolver
             c = regex[0,1]
             substr = regex[1,regex.length - 2]
             match, replace = substr.split(c)
-            urls << name.gsub(/#{match}/, replace)
+            uris << name.gsub(/#{match}/, replace)
           end
         rescue Exception => e
           raise DNSResolverError, "Error resolving #{name}"
         end
       }.resume
 
-      urls
+      uris
     end
 
   end
