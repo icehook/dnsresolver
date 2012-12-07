@@ -6,7 +6,6 @@ module DNSResolver
       unless @logger
         @logger = ::Logger.new(STDOUT)
         @logger.level = ::Logger::INFO
-        Celluloid.logger = @logger
       end
 
       @logger
@@ -14,7 +13,6 @@ module DNSResolver
 
     def logger=(logger)
       @logger = logger
-      Celluloid.logger = @logger
     end
 
   end
