@@ -8,8 +8,8 @@ require 'eventmachine'
 require 'em-resolv-replace'
 require 'ext/naptr'
 require 'dnsresolver/version'
-require 'dnsresolver/config'
-require 'dnsresolver/logger'
+require 'dnsresolver/configuration'
+require 'dnsresolver/logging'
 require 'dnsresolver/exceptions'
 require 'dnsresolver/resolver'
 
@@ -21,7 +21,15 @@ module DNSResolver
   end
 
   def create_resolver(options = {})
-    @dnsresolver = DNSResolver::Resolver.new Config.settings.merge(options)
+    @dnsresolver = DNSResolver::Resolver.new options
   end
+
+  def self.included(base)
+    base.extend(Logging)
+    base.extend(Configuration)
+  end
+
+  extend Logging
+  extend Configuration
 
 end

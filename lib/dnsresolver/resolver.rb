@@ -1,13 +1,13 @@
 module DNSResolver
   class Resolver
-    include DNSResolver::Logger
-    include DNSResolver::Config
+    include DNSResolver::Logging
+    include DNSResolver::Configuration
     include DNSResolver::Exceptions
 
     attr_reader :resolver
 
     def initialize(options = {})
-      @options = Config.settings.merge(options)
+      @options = DNSResolver.config.merge(options)
       @resolver = Resolv::DNS.new(:nameserver => @options[:nameservers])
     end
 
@@ -24,6 +24,9 @@ module DNSResolver
             uris << name.gsub(/#{match}/, replace)
           end
         rescue Exception => e
+          logger.warn "Problem resolving #{name}"
+          logger.warn e.message
+          logger.warn e.backtrace.join("\n")
           raise DNSResolverError, "Error resolving #{name}"
         end
       }.resume
