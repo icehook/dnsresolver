@@ -14,7 +14,7 @@ module DNSResolver
     def resolve_naptr(name)
       uris = []
 
-      Fiber.new {
+      #Fiber.new {
         begin
           @resolver.each_resource(name, Resolv::DNS::Resource::IN::NAPTR) do |res|
             regex = res.regex
@@ -29,7 +29,7 @@ module DNSResolver
           logger.warn e.backtrace.join("\n")
           raise DNSResolverError, "Error resolving #{name}"
         end
-      }.resume
+      #}.resume
 
       uris
     end
