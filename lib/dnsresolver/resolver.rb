@@ -18,7 +18,7 @@ module DNSResolver
     def resolve_naptr(name, &callback)
       uris = []
 
-      EM::DnsResolver::Request(EM::DnsResolver.socket, name, Resolv::DNS::Resource::IN::NAPTR).callback { |res|
+      EM::DnsResolver::Request.new(EM::DnsResolver.socket, name, Resolv::DNS::Resource::IN::NAPTR).callback { |res|
         regex = res.regex
         c = regex[0,1]
         substr = regex[1,regex.length - 2]
