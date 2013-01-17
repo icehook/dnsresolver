@@ -25,4 +25,5 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency 'uuid', '~> 2.3.5'
   gem.add_runtime_dependency 'activesupport', '>= 3.0.0'
   gem.add_runtime_dependency 'eventmachine', '~> 1.0.0'
+  gem.add_runtime_dependency 'hashie', '~> 1.2.0'
 end

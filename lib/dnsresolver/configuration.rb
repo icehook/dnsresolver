@@ -2,19 +2,19 @@ module DNSResolver
   module Configuration
     extend self
 
-    DEFAULT_OPTIONS = {
+    DEFAULT_OPTIONS = Hashie::Mash.new({
       :nameservers => %w(8.8.8.8 8.8.4.4),
       :log_file => STDOUT,
-      :log_age => 'daily',
+      :log_age => 86400,
       :log_level => :debug
-    }.with_indifferent_access
+    })
 
     def self.extended(base)
       base.reset
     end
 
     def reset
-      self.config = HashWithIndifferentAccess.new
+      self.config = Hashie::Mash.new
       self
     end
 
@@ -29,7 +29,7 @@ module DNSResolver
         options = {}
       end
 
-      @options = DEFAULT_OPTIONS.merge(options).with_indifferent_access
+      @options = Hashie::Mash.new(DEFAULT_OPTIONS.to_hash.merge(options))
     end
 
     def config
