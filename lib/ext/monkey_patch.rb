@@ -5,6 +5,33 @@ class EventMachine::DnsResolver::Request
     request.max_tries = 2
     request
   end
+
+  def receive_answer(msg)
+    result = []
+    msg.each_answer do |name,ttl,data|
+      case data
+      when Resolv::DNS::Resource::IN::A, Resolv::DNS::Resource::IN::AAAA
+        result << data.address.to_s
+      when Resolv::DNS::Resource::IN::PTR
+        result << data.name.to_s
+      when Resolv::DNS::Resource::IN::NAPTR
+        begin
+          regex = data.regex
+          c = regex[0,1]
+          substr = regex[1,regex.length - 2]
+          match, replace = substr.split(c)
+          result << name.to_s.gsub(/#{match}/, replace)
+        rescue Exception => e
+          fail "error parsing #{e.message}"
+        end
+      end
+    end
+    if result.empty?
+      fail "rcode=#{msg.rcode}"
+    else
+      succeed result
+    end
+  end
 end
 
 class EventMachine::DnsResolver::DnsSocket

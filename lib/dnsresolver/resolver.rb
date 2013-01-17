@@ -31,11 +31,7 @@ module DNSResolver
       uris = []
 
       EventMachine::DnsResolver::Request.new(@socket, name, Resolv::DNS::Resource::IN::NAPTR).callback { |res|
-        regex = res.regex
-        c = regex[0,1]
-        substr = regex[1,regex.length - 2]
-        match, replace = substr.split(c)
-        uris << name.gsub(/#{match}/, replace)
+        uris = res
         yield uris, nil
       }.errback { |e|
         yield uris, DNSResolverError.new("Problem resolving #{name} #{e}")
