@@ -26,6 +26,14 @@ module DNSResolver
     def create_resolver(options = {})
       @dnsresolver = DNSResolver::Resolver.new options
     end
+
+    def hosts
+      @hosts || init_hosts
+    end
+
+    def init_hosts
+      @hosts = Resolv::Hosts.new('/etc/hosts')
+    end
   end
 
   def self.included(base)
@@ -37,5 +45,7 @@ module DNSResolver
   extend Logging
   extend Configuration
   extend ClassMethods
+
+  init_hosts
 
 end

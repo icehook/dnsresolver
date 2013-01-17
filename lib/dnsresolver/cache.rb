@@ -7,7 +7,7 @@ module DNSResolver
     attr_accessor :map, :ttl, :expire_every, :lock
 
     def initialize(options = {})
-      @map = Hashie::Mash.new({})
+      @map = {}.with_indifferent_access
       @ttl = options[:ttl] || 30
       @expire_every = options[:expire_every] || 15
       @lock = false
@@ -18,8 +18,8 @@ module DNSResolver
       return if self.locked?
 
       begin
-        h1 = Hashie::Mash.new({:addresses => addresses, :expires_at => (Time.now + @ttl)})
-        h2 = Hashie::Mash.new({type => h1})
+        h1 = {:addresses => addresses, :expires_at => (Time.now + @ttl)}.with_indifferent_access
+        h2 = {type => h1}.with_indifferent_access
 
         if @map[name].blank?
           @map[name] = h2
@@ -54,7 +54,7 @@ module DNSResolver
 
         @new_map.each do |name, type_hashes|
           type_hashes.each do |type, h|
-            if type && h && h.expires_at? && (h.expires_at <= Time.now)
+            if type && h && h[:expires_at] && (h[:expires_at] <= Time.now)
               @new_map[name].delete type
             end
           end

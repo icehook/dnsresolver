@@ -3,11 +3,14 @@ class EventMachine::DnsResolver::Request
     request = super
     request.retry_interval = 1
     request.max_tries = 2
+
     request.callback {
       request.cancel_timeout
-    }.errback {
+    }
+    request.errback {
       request.cancel_timeout
     }
+
     request
   end
 
@@ -40,12 +43,12 @@ class EventMachine::DnsResolver::Request
 end
 
 class EventMachine::DnsResolver::DnsSocket
-  def nameservers=(nameservers)
-    @nameservers = nameservers
+  def nameserver=(nameserver)
+    @nameserver = nameserver
   end
 
-  def nameservers
-    @nameservers
+  def nameserver
+    @nameserver
   end
 
   def post_init
@@ -55,6 +58,6 @@ class EventMachine::DnsResolver::DnsSocket
   end
 
   def send_packet(pkt)
-    send_datagram pkt, self.nameservers.sample, 53
+    send_datagram pkt, self.nameserver, 53
   end
 end
