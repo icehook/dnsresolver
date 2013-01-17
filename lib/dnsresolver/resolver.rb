@@ -21,28 +21,26 @@ module DNSResolver
       Cache.new(options)
     end
 
+    def resolve_with_cache(name, type)
+      @cache ? [] : @cache.get_addresses name, type
+    end
+
+    def resolve_with_hosts(name)
+      @hosts ? [] : @hosts.getaddresses(name) name
+    end
+
     def resolve(name, &callback)
       addresses = []
 
-      if @cache
-        addresses = @cache.get_addresses name, 'A'
-        unless addresses.blank?
-          yield addresses, nil
-          return addresses
-        end
-      end
+      result = resolve_with_cache(name, 'A') if @cache
 
-      if @use_hosts && @hosts
-        begin
-          result = @hosts.getaddresses(name)
-          unless result.blank?
-            addresses = result
-            @cache.store name, 'A', addresses if @cache && !@cache.locked?
-            yield addresses, nil
-            return addresses
-          end
-        rescue Exception => e
-        end
+      result = resolve_with_hosts(name) if result.blank? && @use_hosts && @hosts
+
+      unless result.blank?
+        addresses = result
+        @cache.store name, 'A', addresses if @cache && !@cache.locked?
+        yield addresses, nil
+        return addresses
       end
 
       EventMachine::DnsResolver::Request.new(@socket, name, Resolv::DNS::Resource::IN::A).callback { |res|
