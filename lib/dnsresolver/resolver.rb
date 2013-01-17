@@ -50,7 +50,6 @@ module DNSResolver
         r.timeout(@timeout, 'timeout')
 
         r.callback { |res|
-          logger.info res.inspect
           r.cancel_timeout
           addresses = res
           @cache.store name, 'A', addresses if @cache && !@cache.locked?
