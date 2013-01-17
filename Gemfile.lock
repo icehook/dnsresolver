@@ -3,7 +3,7 @@ PATH
   specs:
     dnsresolver (0.0.7)
       activesupport (>= 3.0.0)
-      em-resolv-replace (~> 1.1.3)
+      em-resolv-replace (= 1.1.3)
       eventmachine (~> 1.0.0)
       hashie (~> 1.2.0)
       uuid (~> 2.3.5)
