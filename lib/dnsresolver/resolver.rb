@@ -11,11 +11,22 @@ module DNSResolver
       @socket = EventMachine::DnsResolver::DnsSocket.open
       @socket.nameservers = @options[:nameservers]
       @timeout = @options[:timeout] || 1
+      @use_hosts = @options[:use_hosts] || true
+      @hosts = Resolv::Hosts.new
       #@resolver = Resolv::DNS.new(:nameserver => @options[:nameservers])
     end
 
     def resolve(name, &callback)
       addresses = []
+
+      if @use_hosts && @hosts
+        result = @hosts.getaddresses
+        unless result.blank?
+          addresses = result
+          yield addresses
+          return addresses
+        end
+      end
 
       EventMachine::DnsResolver::Request.new(@socket, name, Resolv::DNS::Resource::IN::A).callback { |res|
         addresses = res

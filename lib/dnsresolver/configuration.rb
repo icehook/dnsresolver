@@ -6,7 +6,9 @@ module DNSResolver
       :nameservers => %w(8.8.8.8 8.8.4.4),
       :log_file => STDOUT,
       :log_age => 86400,
-      :log_level => :debug
+      :log_level => :debug,
+      :use_hosts => true,
+      :timeout => 1
     })
 
     def self.extended(base)
@@ -29,7 +31,7 @@ module DNSResolver
         options = {}
       end
 
-      @options = Hashie::Mash.new(DEFAULT_OPTIONS.to_hash.merge(options))
+      @options = Hashie::Mash.new(DEFAULT_OPTIONS.merge(options))
     end
 
     def config
