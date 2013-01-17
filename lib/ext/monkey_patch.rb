@@ -3,6 +3,11 @@ class EventMachine::DnsResolver::Request
     request = super
     request.retry_interval = 1
     request.max_tries = 2
+    request.callback {
+      request.cancel_timeout
+    }.errback {
+      request.cancel_timeout
+    }
     request
   end
 
