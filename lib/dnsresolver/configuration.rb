@@ -8,7 +8,10 @@ module DNSResolver
       :log_age => 86400,
       :log_level => :debug,
       :use_hosts => true,
-      :timeout => 1
+      :timeout => 1,
+      :cache_ttl => 30,
+      :cache => true,
+      :cache_expires => 15
     })
 
     def self.extended(base)

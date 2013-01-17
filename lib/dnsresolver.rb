@@ -13,25 +13,29 @@ require 'dnsresolver/version'
 require 'dnsresolver/configuration'
 require 'dnsresolver/logging'
 require 'dnsresolver/exceptions'
+require 'dnsresolver/cache'
 require 'dnsresolver/resolver'
 
 module DNSResolver
-  extend self
 
-  def generate_uuid
-    UUID.generator.generate
-  end
+  module ClassMethods
+    def generate_uuid
+      UUID.generator.generate
+    end
 
-  def create_resolver(options = {})
-    @dnsresolver = DNSResolver::Resolver.new options
+    def create_resolver(options = {})
+      @dnsresolver = DNSResolver::Resolver.new options
+    end
   end
 
   def self.included(base)
     base.extend(Logging)
     base.extend(Configuration)
+    base.extend(ClassMethods)
   end
 
   extend Logging
   extend Configuration
+  extend ClassMethods
 
 end
