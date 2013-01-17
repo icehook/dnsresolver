@@ -20,11 +20,14 @@ module DNSResolver
       addresses = []
 
       if @use_hosts && @hosts
-        result = @hosts.getaddresses
-        unless result.blank?
-          addresses = result
-          yield addresses
-          return addresses
+        begin
+          result = @hosts.getaddresses(name)
+          unless result.blank?
+            addresses = result
+            yield addresses, nil
+            return addresses
+          end
+        rescue Exception => e
         end
       end
 
