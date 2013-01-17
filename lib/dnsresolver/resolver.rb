@@ -25,8 +25,7 @@ module DNSResolver
         match, replace = substr.split(c)
         uris << name.gsub(/#{match}/, replace)
       }.errback { |e|
-        logger.warn "Problem resolving #{name}"
-        logger.warn e
+        logger.warn "Problem resolving #{name} #{e}"
       }.timeout(1, 'timeout')
 
       uris
