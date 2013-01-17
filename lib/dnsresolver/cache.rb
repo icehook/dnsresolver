@@ -8,7 +8,7 @@ module DNSResolver
 
     def initialize(options = {})
       @map = Hashie::Mash.new({})
-      @ttl = options[:ttl] || 360
+      @ttl = options[:ttl] || 30
       @expire_every = options[:expire_every] || 15
       @lock = false
       EM::PeriodicTimer.new(@expire_every) { self.expire! }
@@ -53,11 +53,8 @@ module DNSResolver
         @new_map = @map.dup
 
         @new_map.each do |name, type_hashes|
-          logger.info name
           type_hashes.each do |type, h|
-            logger.info type
             if type && h && h.expires_at? && (h.expires_at <= Time.now)
-              logger.info 'clearing'
               @new_map[name].delete type
             end
           end

@@ -27,14 +27,12 @@ module DNSResolver
       if @cache
         addresses = @cache.get_addresses name, 'A'
         unless addresses.blank?
-          logger.info 'hit cache'
           yield addresses, nil
           return addresses
         end
       end
 
       if @use_hosts && @hosts
-        logger.info 'hit hosts'
         begin
           result = @hosts.getaddresses(name)
           unless result.blank?
@@ -48,7 +46,6 @@ module DNSResolver
       end
 
       EventMachine::DnsResolver::Request.new(@socket, name, Resolv::DNS::Resource::IN::A).callback { |res|
-        logger.info 'hit lookup'
         addresses = res
         @cache.store name, 'A', addresses if @cache && !@cache.locked?
         yield addresses, nil
