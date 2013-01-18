@@ -43,7 +43,7 @@ module DNSResolver
         addresses = result
         @cache.store name, 'A', addresses if @cache && !@cache.locked?
         yield addresses, nil
-        return addresses
+        addresses
       else
         r = EventMachine::DnsResolver::Request.new(@sockets.sample, name, Resolv::DNS::Resource::IN::A)
 
@@ -62,7 +62,7 @@ module DNSResolver
           yield addresses, DNSResolverError.new("Problem resolving #{name} #{e}")
         }
 
-        return addresses
+        addresses
       end
     end
 
