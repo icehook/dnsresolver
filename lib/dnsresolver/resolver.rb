@@ -7,7 +7,7 @@ module DNSResolver
     attr_reader :resolver, :cache, :hosts
 
     def initialize(options = {})
-      @options = DNSResolver.config.merge(options)
+      @options = DNSResolver.config.merge(options.with_indifferent_access)
       @sockets = []
       @options[:nameservers].each do |ns|
         socket = EventMachine::DnsResolver::DnsSocket.open
