@@ -31,6 +31,7 @@ class Resolv
             msg.put_string(@regex)
             msg.put_string(@replacement)
           end
+
           def self.decode_rdata(msg)
             order, preference = msg.get_unpack('nn')
             flag = msg.get_string

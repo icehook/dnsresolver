@@ -69,7 +69,7 @@ module DNSResolver
     def resolve_naptr(name, &callback)
       uris = []
 
-      r = EventMachine::DnsResolver::Request.new(@sockets.sample, name, Resolv::DNS::Resource::IN::NAPTR)
+      r = EventMachine::DnsResolver::Request.new(@sockets.sample, Resolv::DNS::Name.create(name), Resolv::DNS::Resource::IN::NAPTR)
 
       r.timeout(@timeout, 'timeout')
 
