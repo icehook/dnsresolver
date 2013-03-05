@@ -1,0 +1,9 @@
+nameservers:
+  - '8.8.8.8'
+  - '8.8.4.4'
+log_level: debug
+use_hosts: false
+timeout: 3
+cache_ttl: 30
+cache: false
+cache_expires: 15

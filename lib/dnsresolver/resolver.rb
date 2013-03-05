@@ -32,60 +32,79 @@ module DNSResolver
       DNSResolver.hosts ? DNSResolver.hosts.getaddresses(name) : []
     end
 
-    def resolve(name, &callback)
+    def resolve(name, options = {}, &callback)
       addresses = []
+      type = options[:type] || 'A'
 
-      result = resolve_with_cache(name, 'A') if @cache
+      logger.debug "attempting to resolve #{name} type #{type} with #{@options[:nameservers].inspect}"
 
-      result = resolve_with_hosts(name) if result.blank? && @use_hosts
+      if type == 'A'
+        result = resolve_with_cache(name, 'A') if @cache
+        result = resolve_with_hosts(name) if result.blank? && @use_hosts
 
-      unless result.blank?
-        addresses = result
-        @cache.store name, 'A', addresses if @cache && !@cache.locked?
-        yield addresses, nil
-        addresses
-      else
-        r = EventMachine::DnsResolver::Request.new(@sockets.sample, name, Resolv::DNS::Resource::IN::A)
+        unless result.blank?
+          addresses = result
+        else
+          addresses = self.resolve_a name
+          @cache.store name, 'A', addresses if !addresses.blank? && @cache && !@cache.locked?
+        end
+      elsif type == 'NAPTR'
+        addresses = self.resolve_naptr name
+      end
 
+      addresses
+    end
+
+    def resolve_a(name, options = {}, &callback)
+      results = []
+
+      socket = options[:socket] || @sockets.sample
+      results, error = EM::Synchrony.sync self.make_request(socket, name, Resolv::DNS::Resource::IN::A, options)
+
+      logger.warn error.message if error
+
+      results
+    end
+
+    def resolve_naptr(name, options = {}, &callback)
+      results = []
+
+      socket = options[:socket] || @sockets.sample
+      results, error = EM::Synchrony.sync self.make_request(socket, name, Resolv::DNS::Resource::IN::NAPTR, options)
+
+      logger.warn error.message if error
+
+      results
+    end
+
+    protected
+
+      def make_request(socket, name, type = Resolv::DNS::Resource::IN::A, options = {})
+        timeout = options[:timeout] || @timeout
+
+        a = Action.new
+
+        r = EventMachine::DnsResolver::Request.new(@sockets.sample, Resolv::DNS::Name.create(name), type)
         r.timeout(@timeout, 'timeout')
+
+        a.attributes.request = r
+        a.set_timeout(@timeout)
 
         r.callback { |res|
           r.cancel_timeout
-          addresses = res
-          @cache.store name, 'A', addresses if @cache && !@cache.locked?
-          yield addresses, nil
+          a.cancel_timeout
+          results = res
+          a.succeed results, nil
         }
 
         r.errback { |e|
-          logger.info 'errback'
           r.cancel_timeout
-          yield addresses, DNSResolverError.new("Problem resolving #{name} #{e}")
+          a.cancel_timeout
+          a.fail [], DNSResolverError.new("Problem resolving #{name} #{e}")
         }
 
-        addresses
+        a
       end
-    end
-
-    def resolve_naptr(name, &callback)
-      uris = []
-
-      r = EventMachine::DnsResolver::Request.new(@sockets.sample, Resolv::DNS::Name.create(name), Resolv::DNS::Resource::IN::NAPTR)
-
-      r.timeout(@timeout, 'timeout')
-
-      r.callback { |res|
-        r.cancel_timeout
-        uris = res
-        yield uris, nil
-      }
-
-      r.errback { |e|
-        r.cancel_timeout
-        yield uris, DNSResolverError.new("Problem resolving #{name} #{e}")
-      }
-
-      uris
-    end
 
   end
 end

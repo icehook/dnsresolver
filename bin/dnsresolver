@@ -1,0 +1,61 @@
+#!/usr/bin/env ruby
+
+require File.expand_path('../../lib/dnsresolver', __FILE__)
+
+runner = Dante::Runner.new('dnsresolver')
+# Sets the description in 'help'
+runner.description = 'dnsresolver'
+# Setup custom 'workers' option flag
+runner.with_options do |opts|
+  opts.on("-t", "--type TYPE", String, "Record type") do |type|
+    options[:type] = type
+  end
+
+  opts.on("-c", "--config FILE", String, "Config file") do |config|
+    options[:config] = config
+  end
+
+  opts.on("-s", "--server SERVER", String, "Server") do |server|
+    options[:server] = server
+  end
+
+  opts.on("-n", "--name NAME", String, "Name") do |name|
+    options[:name] = name
+  end
+
+  opts.on("-e", "--console", String, "Console") do
+    options[:console] = true
+  end
+end
+
+# Parse command-line options and execute the process
+runner.execute do |opts|
+  config = YAML.load(File.open(opts[:config])).with_indifferent_access
+  DNSResolver.config = config
+
+  if opts[:console]
+    binding.pry
+  else
+    EM.synchrony {
+      EM.error_handler { |e|
+        DNSResolver.logger.error e.message
+        DNSResolver.logger.error e.backtrace.join("\n")
+      }
+
+      trap("TERM") { EM.stop }
+      trap("INT") { EM.stop }
+
+      options = {}
+      options[:nameservers] = [opts[:server]] if opts[:server]
+      resolver = DNSResolver.create_resolver options
+
+      options = { :type => (opts[:type] || 'A') }
+      t = Time.now
+      result = resolver.resolve opts[:name], options
+
+      STDOUT.puts "result: #{result} in #{(Time.now.to_f - t.to_f).round(5)}"
+
+      EM.stop
+    }
+  end
+end

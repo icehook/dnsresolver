@@ -1,8 +1,6 @@
 module DNSResolver
   class Cache
-    include DNSResolver::Logging
     include DNSResolver::Configuration
-    include DNSResolver::Exceptions
 
     attr_accessor :map, :ttl, :expire_every, :lock
 
