@@ -51,9 +51,9 @@ runner.execute do |opts|
 
       options = { :type => (opts[:type] || 'A') }
       t = Time.now
-      result = resolver.resolve opts[:name], options
+      response = resolver.resolve opts[:name], options
 
-      STDOUT.puts "result: #{result} in #{(Time.now.to_f - t.to_f).round(5)}"
+      STDOUT.puts "response: #{response.addresses.inspect} in #{(Time.now.to_f - t.to_f).round(5)}"
 
       EM.stop
     }

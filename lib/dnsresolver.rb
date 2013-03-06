@@ -17,6 +17,7 @@ require 'dnsresolver/action'
 require 'dnsresolver/logging'
 require 'dnsresolver/exceptions'
 require 'dnsresolver/cache'
+require 'dnsresolver/response'
 require 'dnsresolver/resolver'
 
 module DNSResolver

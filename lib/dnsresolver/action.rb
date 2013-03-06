@@ -13,6 +13,10 @@ class DNSResolver::Action
     Time.now.utc.to_f - @attributes.created_at.utc.to_f
   end
 
+  def created_at
+    @attributes.created_at
+  end
+
   def ttl
     @attributes.ttl
   end

@@ -1,8 +1,6 @@
 module DNSResolver
   class Resolver
-    include DNSResolver::Logging
     include DNSResolver::Configuration
-    include DNSResolver::Exceptions
 
     attr_reader :resolver, :cache, :hosts
 
@@ -33,7 +31,7 @@ module DNSResolver
     end
 
     def resolve(name, options = {}, &callback)
-      addresses = []
+      response = nil
       type = options[:type] || 'A'
 
       logger.debug "attempting to resolve #{name} type #{type} with #{@options[:nameservers].inspect}"
@@ -44,40 +42,33 @@ module DNSResolver
 
         unless result.blank?
           addresses = result
+          response = Response.new nil, addresses, []
         else
-          addresses = self.resolve_a name
-          @cache.store name, 'A', addresses if !addresses.blank? && @cache && !@cache.locked?
+          response = self.resolve_a name
+          @cache.store name, 'A', response.addresses if !response.addresses.blank? && @cache && !@cache.locked?
         end
       elsif type == 'NAPTR'
-        addresses = self.resolve_naptr name
+        response = self.resolve_naptr name
       end
 
-      addresses
+      response
     end
 
-    def resolve_a(name, options = {}, &callback)
-      results = []
-
+    def resolve_a(name, options = {})
       socket = options[:socket] || @sockets.sample
-      results, error = EM::Synchrony.sync self.make_request(socket, name, Resolv::DNS::Resource::IN::A, options)
-
-      logger.warn error.message if error
-
-      results
+      EM::Synchrony.sync self.make_request(socket, name, Resolv::DNS::Resource::IN::A, options)
     end
 
-    def resolve_naptr(name, options = {}, &callback)
-      results = []
-
+    def resolve_naptr(name, options = {})
       socket = options[:socket] || @sockets.sample
-      results, error = EM::Synchrony.sync self.make_request(socket, name, Resolv::DNS::Resource::IN::NAPTR, options)
-
-      logger.warn error.message if error
-
-      results
+      EM::Synchrony.sync self.make_request(socket, name, Resolv::DNS::Resource::IN::NAPTR, options)
     end
 
     protected
+
+      def make_response(request, addresses, errors, options = {})
+        Response.new request, addresses, errors, options
+      end
 
       def make_request(socket, name, type = Resolv::DNS::Resource::IN::A, options = {})
         timeout = options[:timeout] || @timeout
@@ -94,13 +85,13 @@ module DNSResolver
           r.cancel_timeout
           a.cancel_timeout
           results = res
-          a.succeed results, nil
+          a.succeed Response.new(r, results, [], :requested_at => a.created_at)
         }
 
         r.errback { |e|
           r.cancel_timeout
           a.cancel_timeout
-          a.fail [], DNSResolverError.new("Problem resolving #{name} #{e}")
+          a.fail Response.new(r, [], [DNSResolverError.new("Problem resolving #{name} #{e}")], :requested_at => a.created_at)
         }
 
         a
