@@ -23,6 +23,16 @@ describe DNSResolver::Resolver do
     }
   end
 
+  it "can resolve '127.0.0.1'" do
+    EM.synchrony {
+      resolver = Resolver.new(options.merge(:use_hosts => true))
+      result = resolver.resolve 'localhost', :type => 'A'
+      result.addresses.include?('127.0.0.1').should be_true
+
+      EM.stop
+    }
+  end
+
   it "can resolve 'localhost'" do
     EM.synchrony {
       resolver = Resolver.new(options.merge(:use_hosts => true))
@@ -38,6 +48,16 @@ describe DNSResolver::Resolver do
       resolver = Resolver.new(options)
       result = resolver.resolve 'google.com', :type => 'A'
       result.addresses.should_not be_empty
+
+      EM.stop
+    }
+  end
+
+  it "can determine if address?" do
+    EM.synchrony {
+      resolver = Resolver.new(options)
+      resolver.address?('127.0.0.1').should be_true
+      resolver.address?('google.com').should be_false
 
       EM.stop
     }

@@ -37,7 +37,8 @@ module DNSResolver
       logger.debug "attempting to resolve #{name} type #{type} with #{@options[:nameservers].inspect}"
 
       if type == 'A'
-        result = resolve_with_cache(name, 'A') if @cache
+        result = [name] if self.address?(name)
+        result = resolve_with_cache(name, 'A') if result.blank? && @cache
         result = resolve_with_hosts(name) if result.blank? && @use_hosts
 
         unless result.blank?
@@ -62,6 +63,10 @@ module DNSResolver
     def resolve_naptr(name, options = {})
       socket = options[:socket] || @sockets.sample
       EM::Synchrony.sync self.make_request(socket, name, Resolv::DNS::Resource::IN::NAPTR, options)
+    end
+
+    def address?(s)
+      Resolv::AddressRegex =~ s ? true : false
     end
 
     protected
