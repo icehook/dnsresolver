@@ -2,19 +2,19 @@ module DNSResolver
   class Resolver
     include DNSResolver::Configuration
 
-    attr_reader :resolver, :cache, :hosts
+    attr_reader :resolver, :cache, :use_hosts
 
     def initialize(options = {})
-      @options = DNSResolver.config.merge(options.with_indifferent_access)
+      @options = DNSResolver.config.merge(options)
       @sockets = []
       @options[:nameservers].each do |ns|
         socket = EventMachine::DnsResolver::DnsSocket.open
         socket.nameserver = ns
         @sockets << socket
       end
-      @timeout = @options[:timeout] || 1
-      @use_hosts = @options[:use_hosts] || true
-      @cache = self.init_cache(:expire_every => @options[:cache_expires], :ttl => @options[:cache_ttl]) if @options[:cache]
+      @timeout = @options.timeout
+      @use_hosts = @options.use_hosts
+      @cache = self.init_cache(:expire_every => @options.cache_expires, :ttl => @options.cache_ttl) if @options.cache
       #@resolver = Resolv::DNS.new(:nameserver => @options[:nameservers])
     end
 
