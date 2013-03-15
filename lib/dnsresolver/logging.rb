@@ -11,7 +11,7 @@ module DNSResolver
       logger = Logger.new(DNSResolver.config.log_file, DNSResolver.config.log_age)
       logger.level = "Logger::Severity::#{DNSResolver.config.log_level.to_s.upcase}".constantize
       logger.formatter = proc do |severity, datetime, progname, msg|
-        "[#{Time.now.iso8601(5)}] ##{Thread.current.object_id} #{severity}: #{msg}\n"
+        "[#{Time.now.iso8601(5)}] DNSResolver #{severity}: #{msg}\n"
       end
       logger
     end
