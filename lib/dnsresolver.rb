@@ -25,10 +25,6 @@ module DNSResolver
   module ClassMethods
     attr_accessor :resolver
 
-    def generate_uuid
-      UUID.generator.generate
-    end
-
     def create_resolver(options = {})
       @resolver = DNSResolver::Resolver.new(options)
     end

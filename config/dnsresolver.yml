@@ -1,7 +1,7 @@
 nameservers:
   - '8.8.8.8'
   - '8.8.4.4'
-log_level: debug
+log_level: info
 use_hosts: false
 timeout: 3
 cache_ttl: 30
