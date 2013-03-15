@@ -34,7 +34,7 @@ module DNSResolver
       response = nil
       type = options[:type] || 'A'
 
-      logger.debug "attempting to resolve #{name} type #{type} with #{@options[:nameservers].inspect}"
+      DNSResolver.logger.debug "attempting to resolve #{name} type #{type} with #{@options[:nameservers].inspect}"
 
       if type == 'A'
         result = resolve_with_cache(name, 'A') if result.blank? && @cache
