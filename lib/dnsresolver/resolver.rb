@@ -37,8 +37,8 @@ module DNSResolver
       logger.debug "attempting to resolve #{name} type #{type} with #{@options[:nameservers].inspect}"
 
       if type == 'A'
-        result = [name] if self.address?(name)
         result = resolve_with_cache(name, 'A') if result.blank? && @cache
+        result = [name] if result.blank? && self.address?(name)
         result = resolve_with_hosts(name) if result.blank? && @use_hosts
 
         unless result.blank?
