@@ -1,13 +1,13 @@
-#$:.push File.expand_path('../../lib', __FILE__)
+$:.push File.expand_path('../../lib', __FILE__)
 #$:.push File.expand_path('../../spec', __FILE__)
 require 'bundler/setup'
-require File.join(File.dirname(__FILE__), '../lib/dnsresolver')
+require File.expand_path('../../lib/dnsresolver', __FILE__)
 
-codes_path = File.join(File.dirname(__FILE__), 'samples/codes.csv')
+codes_path = File.expand_path('../samples/codes.csv', __FILE__)
 
 @cfg = {
-       :nameservers => ['74.121.83.35'],
-       :domain => 'e164.shangovoip.org'
+       :nameservers => ['198.22.64.214'],
+       :domain => 'e164.org'
       }
 
 dialcodes = []
@@ -17,15 +17,19 @@ File.open(codes_path, 'r').each_line do |line|
   dialcodes << line
 end
 
-DNSResolver.config = @cfg
-@resolver = DNSResolver.create_resolver
+EM.synchrony {
+  DNSResolver.config = @cfg
+  @resolver = DNSResolver.create_resolver
 
-EM.run {
-  dialcodes[0,10].each_with_index do |dialcode,i|
+  dialcodes.each_with_index do |dialcode,i|
+    next if dialcode.length != 7
     begin
-      name = [dialcode.split('').reverse, @cfg[:domain]].compact.join('.')
-      uris = @resolver.resolve_naptr(name)
-      puts "index: #{i} name: #{name} #{uris.inspect}"
+      name = [('1800' + dialcode).split('').reverse, @cfg[:domain]].compact.join('.')
+      Fiber.new {
+        puts "requesting #{i}"
+        response = @resolver.resolve_naptr(name)
+        puts "index: #{i} name: #{name} #{response.inspect}" if response.successful?
+      }.resume
     rescue Exception => e
       DNSResolver.logger.error e.message
       DNSResolver.logger.error e.backtrace.join("\n")

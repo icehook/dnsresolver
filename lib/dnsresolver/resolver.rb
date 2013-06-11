@@ -96,6 +96,10 @@ module DNSResolver
         r.errback { |e|
           r.cancel_timeout
           a.cancel_timeout
+          s = r.instance_variable_get :@socket
+          h = s.instance_variable_get :@requests
+          request_id = r.instance_variable_get :@id
+          h.delete request_id
           a.fail Response.new(r, [], [DNSResolverError.new("Problem resolving #{name} #{e}")], :requested_at => a.created_at)
         }
 

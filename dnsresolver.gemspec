@@ -19,7 +19,6 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
 
   gem.add_development_dependency 'rspec', '>= 2.11.0'
-  gem.add_development_dependency 'ruby-prof'
   gem.add_development_dependency 'pry'
   gem.add_development_dependency 'ffaker', '>= 1.15.0'
   gem.add_development_dependency 'guard-rspec', '~> 2.5.0'

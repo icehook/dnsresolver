@@ -47,6 +47,7 @@ describe DNSResolver::Resolver do
     EM.synchrony {
       resolver = Resolver.new(options)
       result = resolver.resolve 'google.com', :type => 'A'
+      puts result.inspect
       result.addresses.should_not be_empty
 
       EM.stop

@@ -1,8 +1,8 @@
 class EventMachine::DnsResolver::Request
   def self.new(*args)
     request = super
-    request.retry_interval = 1
-    request.max_tries = 2
+    request.retry_interval = 0.3
+    request.max_tries = 1
 
     request.callback {
       request.cancel_timeout

@@ -16,5 +16,9 @@ module DNSResolver
       (self.completed_at || Time.now).to_f - self.requested_at.to_f if self.requested_at
     end
 
+    def successful?
+      @errors.blank?
+    end
+
   end
 end
