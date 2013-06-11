@@ -20,22 +20,27 @@ end
 EM.synchrony {
   DNSResolver.config = @cfg
   @resolver = DNSResolver.create_resolver
+  responses = []
 
   dialcodes.each_with_index do |dialcode,i|
     next if dialcode.length != 7
     begin
       name = [('1800' + dialcode).split('').reverse, @cfg[:domain]].compact.join('.')
-      Fiber.new {
-        puts "requesting #{i}"
-        response = @resolver.resolve_naptr(name)
-        puts "index: #{i} name: #{name} #{response.inspect}" if response.successful?
-      }.resume
+      puts "requesting #{i}"
+      response = @resolver.resolve_naptr(name)
+      if response.successful?
+        puts "index: #{i} name: #{name} #{response.inspect}"
+      end
     rescue Exception => e
       DNSResolver.logger.error e.message
       DNSResolver.logger.error e.backtrace.join("\n")
       EM.stop
     end
   end
+
+  puts responses.inspect
+
+  EM.stop
 
   EM.error_handler { |e|
     DNSResolver.logger.error e.message
