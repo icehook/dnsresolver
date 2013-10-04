@@ -5,7 +5,7 @@ module DNSResolver
     attr_accessor :map, :ttl, :expire_every, :lock
 
     def initialize(options = {})
-      @map = {}.with_indifferent_access
+      @map = Hashie::Mash.new({})
       @ttl = options[:ttl] || 30
       @expire_every = options[:expire_every] || 15
       @lock = false

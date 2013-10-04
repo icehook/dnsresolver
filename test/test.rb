@@ -6,7 +6,7 @@ require File.expand_path('../../lib/dnsresolver', __FILE__)
 codes_path = File.expand_path('../samples/codes.csv', __FILE__)
 
 @cfg = {
-       :nameservers => ['198.22.64.214'],
+       :nameservers => ['207.198.118.90'],
        :domain => 'e164.org'
       }
 
