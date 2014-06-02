@@ -18,7 +18,7 @@ Gem::Specification.new do |gem|
 
   gem.require_paths = ["lib"]
 
-  gem.add_development_dependency 'rspec', '>= 2.11.0'
+  gem.add_development_dependency 'rspec', '~> 2.11.0'
   gem.add_development_dependency 'pry'
   gem.add_development_dependency 'ffaker', '>= 1.15.0'
   gem.add_development_dependency 'guard-rspec', '~> 2.5.0'
@@ -28,7 +28,7 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency 'uuid', '~> 2.3.5'
   gem.add_runtime_dependency 'activesupport', '>= 3.0.0'
   gem.add_runtime_dependency 'em-synchrony', '~> 1.0.3'
-  gem.add_runtime_dependency 'hashie', '~> 2.0.2'
+  gem.add_runtime_dependency 'hashie', '~> 2.1.1'
   gem.add_runtime_dependency 'dante', '~> 0.1.5'
   gem.add_runtime_dependency 'awesome_print', '~> 1.1.0'
 end
