@@ -26,7 +26,7 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'simplecov', '~> 0.7.1'
   gem.add_runtime_dependency 'em-resolv-replace', '= 1.1.3'
   gem.add_runtime_dependency 'uuid', '~> 2.3.5'
-  gem.add_runtime_dependency 'activesupport', '>= 3.0.0'
+  gem.add_runtime_dependency 'activesupport', '~> 4.0.0'
   gem.add_runtime_dependency 'em-synchrony', '~> 1.0.3'
   gem.add_runtime_dependency 'hashie', '~> 2.1.1'
   gem.add_runtime_dependency 'dante', '~> 0.1.5'
